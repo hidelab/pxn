@@ -1,3 +1,8 @@
+---
+title: PxN
+layout: home
+---
+
 # PxN System generation pipeline
 
 The system generation consists of three major steps: 
