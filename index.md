@@ -1,25 +1,34 @@
 ---
 title: PxN
 layout: home
+nav_order: 1
+permalink: /pxn/
 ---
 
-# PxN System generation pipeline
+# About 
 
-The system generation consists of three major steps: 
+The PxN system generation consists of three major steps: 
 
 1. Prepating the required input files and objects
 2. Calculating pathway correlations at the experiment level
 3. Aggregating the pathway estimates across experiments into a combined correlation network
 
-Before jumping into step 1 of the pipeline, it is necessary to generate a standard gene set table, and then modify the config file `config-pdxn.sh` so that all the steps in the pipeline can find the necessary input files and parameters. The following sections describe the process of running the system generation pipeline in detail, starting with modifying the config file.
+# Getting started 
 
-## Setting up the environment
+This section explains how to run PxN with a user-provided gene set using one of our built-in gene expression background datasets (Barcode or GTex toil). 
+Before jumping into step 1 of the pipeline, it is necessary to install the dependencies required, clone the repository, generate the required input files, and modify the configuration file `config-pdxn.sh`. The following sections describe each of these steps in detail.
+
+## Installation
 
 The PxN pipeline is a collection of R scripts. The required libraries and installation instructions are described in the [Installation Guide](https://github.com/hidelab/PDxN_2.0/blob/main/analysis/pipeline_pdxn_2.0/scripts/example_prep_notebooks/InstallationGuide.ipynb)
 
-## Building the system for single gene set 
+Once the dependencies are installed, clone this repository by doing
 
-### Prepare a standard gene set table 
+```{bash}
+git clone https://github.com/hidelab/pxn.git
+```
+
+## Inputs 
 
 To run the pipeline with your own gene set you will need to generate a tab-separated file with two columns: `set_name` and `genes`. The `set_name` column indicates the name of the pathway or gene list, and the `genes` column lists the Entrez IDs of the genes in that pathway. If a pathway has 10 genes, this table would have 10 rows for that pathway, one for every gene, where the pathway name is repeated. You can find several examples inside the folder `scripts/example_notebooks` on how to generate this table from unprocessed inputs from public databases such as [MSigSB_v7](https://github.com/hidelab/PDxN_2.0/blob/main/analysis/pipeline_pdxn_2.0/scripts/example_prep_notebooks/prep_geneset-MSigDB_v7.ipynb) or custom gene sets like [Genedex](https://github.com/hidelab/PDxN_2.0/blob/main/analysis/pipeline_pdxn_2.0/scripts/example_prep_notebooks/prep_geneset-Genedex_2024.ipynb). 
 
@@ -33,7 +42,7 @@ Regardless of the starting point, the standard table should look like this:
 | Pathway.KEGG_GLYCOLYSIS_GLUCONEOGENESIS |  5230   | 
 | Pathway.KEGG_GLYCOLYSIS_GLUCONEOGENESIS        |   5162   | 
 
-### Edit the config file 
+## Configurations
 
 The config file contains all the information about where the pipeline inputs are, the resources that will be allocated and other PDxN specific parameters. Every individual script in the pipeline depends on the contents of this config file to run proerly. The first thing you need to do is modify the variables in the config file. DO NOT CHANGE THE VARIABLE NAMES, just modify the file paths or other values (right hand side of the `=` sign). The in-line documentation specifies what to put in each variable. 
 
@@ -62,7 +71,7 @@ DSNAME='gtextoil_gfilter'
 
 6. Configure further parameters according to your specific needs. Use the in-line documentation of the config file to learn more about additional settings. 
 
-### Step 1
+## Run step 1
 
 Once you've generated this standard table and edited the config file you are ready to run the input-generation step:
 
@@ -80,9 +89,9 @@ This wrapper parses the config file and executes the script `pdxn_00_prepset.R` 
     - `pathway_list.RDS`: R object with a list of lists containing the lists of genes in each pathway.
     - `pathway_table.csv`: Human-readable table with the filtered set of gene sets contained in the R object.
   
-### Step 2
+## Run step 2
 
-#### Server mode
+### Server mode
 
 If running on a server, use the script `job-scheduler.sh` to emulate a slurm jobarray to run the first wrapper that processess independently all the tissue groups in the background reference dataset. Simply modify the number of cores directly in the config file (follow its in-code documentation).    
 
@@ -106,7 +115,7 @@ If running on a cluster that uses Slurm, modify the job parameters at the top of
 sbatch 01_explevel_wrapper.sh
 ```
 
-### Step 3
+## Run step 3
 
 Once the previous step is completed for all tissues/grousp you can run the second step by doing: 
 
@@ -114,14 +123,14 @@ Once the previous step is completed for all tissues/grousp you can run the secon
 ./02_combine_wrapper.sh
 ```
 
-### Exploring the results folder 
+## Exploring the results 
 
 The results of a given PXN run will be stored in a subforlder within the directory set in `$OUTDIR` within the config file. If running the pipeline in its single geneset mode, the subfolder will be named according to the following: `[Geneset_name]__[Background_name]`. If running PXN on augment mode, the folder will be named `[Geneset_name]__[Collection_name]__[Network_type]__[Background_name]`. In either case, the folder will contain the following subdirectories:
    - `pathway_activity_tables` - Contains raw pathway activities for all tissues in the background dataset. Each is a `CSV` file with pathways as rows and samples as columns. 
    - `mean_pcor2_barcode_tables` - This folder has the experiment-level pathway correlation estimates resulting from step 1 of the pipeline. There is one file per tissue, containing the pathway pair correlations summarized accross all samples of the same tissue. 
    - `combined_estimates` - This folder contains only three files, which correspond to the aggregation of all tissues in the background dataset. The file `pathway_estimates.tsv` is the most comprehensive one. The other two contain either the P values or the correlations, as indicated in the name of each file.
 
-#### The combined estimates table 
+### The combined estimates table 
 
 The ultimate output of the PXN pipeline is a table with the pathway correlation estimates that resulted from the aggregation of all tissues in the background dataset. The file looks like this:
 
@@ -137,7 +146,9 @@ The ultimate output of the PXN pipeline is a table with the pathway correlation 
 |Resilience_AD|AD_CTR_Astrocytes_up|1.5e-152|1.1e-151|0.31|0.05|0.01|149|327|
 |AD_CTR|AD_CTR_Astrocytes_up|1.1e-115|5.9e-115|0.25|0.08|0.04|320|327|
 
-## Building the system with a new background gene expression dataset 
+# Advanced uses 
+
+## Adding a new background
 
 Integrating a new background gene expression into the pipeline is as simple as matching the file structure (described below). [This](https://github.com/hidelab/PDxN_2.0/blob/main/analysis/pipeline_pdxn_2.0/scripts/example_prep_notebooks/prep_background-gtex-subset.ipynb) is an example of how to build a custom background dataset by subsetting tissues from the GTex toil dataset. If using a completely different dataset as input, you can use the example to guide your preprocessing choices. 
 
@@ -156,7 +167,7 @@ The important part is that the directory containing your background dataset foll
 
 The file `genes_[DATASETNAME].csv` contains the list of genes in the gene universe of this dataset. This list contains the genes that have at least `min_cts` in at least `min_sam_cts` samples. By default, these parameters are set by default to 3 counts in at least 1 sample.
 
-## Building the system for more than one gene set - augment mode 
+## Augment mode 
 
 This functionality enables the user to compute a network between with two types of nodes (or pathways): core nodes and augmented nodes. The pathways in the core set come from the user's geneset of interest, the one that was used in the previous sections. Augmented nodes are a series of built-in reference pathways that can be incorporated into the analysis of a custom gene set (i.e the core set) to put those pathways of interest in the context of other known sets of genes, such as canonical pathways from MSigDB or drug-response pathways from LINCS (2020 release). This approach can also be further customized with other commonly used gene sets that are not built-in, the process is described [here](https://github.com/hidelab/PDxN_2.0/tree/main/analysis/pipeline_pdxn_2.0/input/augment_sets/README.md). 
 
