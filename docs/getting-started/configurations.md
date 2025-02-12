@@ -4,11 +4,12 @@ parent: Getting Started
 nav_order: 2
 ---
 
-# Configuring the Pipeline
+# Pipeline configuration
 
-The config file contains all the information about where the pipeline inputs are, the resources that will be allocated and other PDxN specific parameters. Every individual script in the pipeline depends on the contents of this config file to run proerly. The first thing you need to do is modify the variables in the config file. DO NOT CHANGE THE VARIABLE NAMES, just modify the file paths or other values (right hand side of the `=` sign). The in-line documentation specifies what to put in each variable. 
+The pipeline is controlled by the central configuration file `config_pxn.sh`. This config file contains all the information about where the pipeline inputs are, the resources that will be allocated and other PDxN specific parameters. Every individual script in the pipeline depends on the contents of this config file to run proerly. The first thing you need to do is modify the variables in the config file. DO NOT CHANGE THE VARIABLE NAMES, just modify the file paths or other values (right hand side of the `=` sign). The in-line documentation specifies what to put in each variable. 
 
 Necessary changes:
+
 1. Indicate the path to the input standard gene set table (described above) in the variable `RAW_GSET`.
 
 ```{bash}
