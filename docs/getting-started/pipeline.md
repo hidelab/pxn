@@ -74,7 +74,7 @@ The results of a given PXN run will be stored in a subforlder within the directo
    - `mean_pcor2_barcode_tables` - This folder has the experiment-level pathway correlation estimates resulting from step 1 of the pipeline. There is one file per tissue, containing the pathway pair correlations summarized accross all samples of the same tissue. 
    - `combined_estimates` - This folder contains only three files, which correspond to the aggregation of all tissues in the background dataset. The file `pathway_estimates.tsv` is the most comprehensive one. The other two contain either the P values or the correlations, as indicated in the name of each file.
 
-### The combined estimates table 
+**The combined estimates table**
 
 The ultimate output of the PXN pipeline is a table with the pathway correlation estimates that resulted from the aggregation of all tissues in the background dataset. The file looks like this:
 
