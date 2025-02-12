@@ -4,7 +4,7 @@ parent: Getting Started
 nav_order: 3
 ---
 
-# Running the PxN pipeline
+# Running the Pipeline
 {: .no_toc }
 
 ## Table of contents
