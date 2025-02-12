@@ -1,6 +1,7 @@
 ---
 title: Configurations
 parent: Getting Started
+nav_order: 2
 ---
 
 # Pipeline Configurations
