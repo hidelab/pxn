@@ -4,16 +4,7 @@ parent: Getting Started
 nav_order: 2
 ---
 
-# Pipeline Configurations
-{: .no_toc }
-
-## Table of contents
-{: .no_toc .text-delta }
-
-1. TOC
-{:toc}
-
----
+# Configuring the Pipeline
 
 The config file contains all the information about where the pipeline inputs are, the resources that will be allocated and other PDxN specific parameters. Every individual script in the pipeline depends on the contents of this config file to run proerly. The first thing you need to do is modify the variables in the config file. DO NOT CHANGE THE VARIABLE NAMES, just modify the file paths or other values (right hand side of the `=` sign). The in-line documentation specifies what to put in each variable. 
 
