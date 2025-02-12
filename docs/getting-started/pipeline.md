@@ -17,9 +17,9 @@ nav_order: 3
 
 ## Step 1
 
-Once you've generated this standard table and edited the config file you are ready to run the input-generation step:
+Once you've generated this standard table and edited the config file you are ready to run the input-generation step from the `scripts` folder:
 
-```{bash}
+```
 ./00_prepset_wrapper.sh 
 ```
 
