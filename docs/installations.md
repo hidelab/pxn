@@ -19,6 +19,6 @@ The PxN pipeline is a collection of scripts. The required libraries and installa
 
 Once the dependencies are installed, clone this repository by doing
 
-```{bash}
+```
 git clone https://github.com/hidelab/pxn.git
 ```
