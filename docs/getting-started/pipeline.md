@@ -51,7 +51,7 @@ The job scheduler will block a given number of cores to launch jobs one after th
 
 The job scheduler emulator will create a time-stamped folder inside `scripts/general_logs` that will contain one log file for every 'job', and a general log file. The individual log files show the messages/errors sent to STDOUT by the source script inside the wrapper. The general log file will show a new line every time a new job is launched. You can use this file to track the progress of the code. Once all the jobs have been launched this file sill print a message indicating that it has submitted all jobs. You should also find as many log files as tissues in the selected background dataset. 
 
-#### Cluster mode
+### Cluster mode
 
 If running on a cluster that uses Slurm, modify the job parameters at the top of the script `01_explevel_wrapper.sh` and submit the job by doing:
 
