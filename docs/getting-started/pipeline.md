@@ -1,6 +1,7 @@
 ---
 title: Pipeline
 parent: Getting Started
+nav_order: 3
 ---
 
 # Running the PxN pipeline
