@@ -15,53 +15,54 @@ nav_order: 3
 
 ---
 
-## Step 1
+## Overview
 
-Once you've generated this standard table and edited the config file you are ready to run the input-generation step from the `scripts` folder:
+The pipeline consists of three major stages:
+- **Pre-processing:** Preparing the required input files and directory structure
+- **Step 1:** Estimating pathway correlations in each sample
+- **Step 2:** Aggregating pathway correlations across 
 
+## Quickstart 
+
+To demonstrate the use of PxN we will simply run the pipeline using the `gtextoil` background with the pre-computed `genedex\_gtextoil` gene set (both described in the [Inputs](https://hidelab.github.io/pxn/docs/getting-started/inputs/) section). This demonstration skips the pre-processing stage, since the gene set is already pre-computed. The first thing you need to do is modify the variables in the config file. Do not change the variable names, just modify the file paths or other values (right hand side of the `=` sign). 
+
+1. Configure the input and output paramenters in the config file:
+   
 ```
-./00_prepset_wrapper.sh 
-```
-
-This wrapper parses the config file and executes the script `pdxn_00_prepset.R` which will process the standard table to meet the pipeline requirements. This script will:
-
-1. Filter based pathways based on their size: Discards pathways that have more than `MAX_GENES` genes or less than `MIN_GENES` genes.
-2. Filters the gene set so that it only contains genes that are present in the gene universe of the corresponding backgorund dataset. 
-
-3. Generates the objects required by PDxN inside the `../input` folder:   
-    - `pathway_pairs_stats.csv`: a tablle with summary statistics of all pathway pairs passing the Jacquard index threshold (`MAX_JACQ/100`).
-    - `pathway_list.RDS`: R object with a list of lists containing the lists of genes in each pathway.
-    - `pathway_table.csv`: Human-readable table with the filtered set of gene sets contained in the R object.
-  
-## Step 2
-
-### Server mode
-
-If running on a server, use the script `job-scheduler.sh` to emulate a slurm jobarray to run the first wrapper that processess independently all the tissue groups in the background reference dataset. Simply modify the number of cores directly in the config file (follow its in-code documentation).    
-
-```
-nohup ./job-scheduler.sh &
+GSNAMEBASE='genedex' # Gene set
+DSNAME='gtextoil_gfilter' # Background dataset
+OUTDIR='../output/test_run' # Output folder
 ```
 
-*IMPORTANT NOTE ON RESOURCES*: 
-
-The job scheduler will block a given number of cores to launch jobs one after the other. Each of the sequential jobs utilizes multiple cores internally, this parameter is specified in the `config_pdxn.sh` file. You need to take into consideration both numbers when deciding the number of cores you will asign to the job scheduler. For example, if each sequencial job is set to use 8 cores and the scheduler to use 3, then your code will be using 24 cores at any given time. If you set the sequential jobs to use 25 cores each, and the job scheduler to use 4, you would be taking over 120 cores! Be careful and make sure you use only the resources that are needed. A configuration of 8 cores in the sequencial jobs and 3 on the job scheduler strikes a good balance between performance and time. 
-
-*Monitoring jobs*
-
-The job scheduler emulator will create a time-stamped folder inside `scripts/general_logs` that will contain one log file for every 'job', and a general log file. The individual log files show the messages/errors sent to STDOUT by the source script inside the wrapper. The general log file will show a new line every time a new job is launched. You can use this file to track the progress of the code. Once all the jobs have been launched this file sill print a message indicating that it has submitted all jobs. You should also find as many log files as tissues in the selected background dataset. 
-
-### Cluster mode
-
-If running on a cluster that uses Slurm, modify the job parameters at the top of the script `01_explevel_wrapper.sh` and submit the job by doing:
+2. Customize other PxN run parameters according to your system:
 
 ```
-sbatch 01_explevel_wrapper.sh
+# Resources
+export CORES=10 # number of cores (for part 1)
+export CORES_P2=25 # number of cores (for part 2)
 ```
 
-## Step 3
+3. From the scripts folder, test your configuration by running the first step of the pipeline for one tissue:
 
-Once the previous step is completed for all tissues/grousp you can run the second step by doing: 
+```
+ ./01_explevel_wrapper.sh 1
+```
+
+The standard output should end like this:
+
+```
+Storing outputs...
+Finished.
+Time difference of 18.45294 secs
+```
+
+4. Launch the job scheduler emulator to run the first step for all tissues. Monitor the jobs by looking at the log file inside `general_logs/01_explevel_wrapper_TIMESTAMP/scheduler.log` to see when all jobs are finished (see example below):
+
+```
+nohup ./job-sheduler.sh &
+```
+
+5. Once all the jobs are done, run the step 2 of the pipeline. Verify that the code finished successfully by looking at the log file `general_logs/02_combine_wrapper_TIMESTAMP/run.log` (see example below):
 
 ```
 ./02_combine_wrapper.sh
@@ -89,3 +90,94 @@ The ultimate output of the PXN pipeline is a table with the pathway correlation 
 |AD_Immune_response|AD_CTR_Astrocytes_up|3.3e-51|8.9e-51|-0.12|0.04|0.05|42|327|
 |Resilience_AD|AD_CTR_Astrocytes_up|1.5e-152|1.1e-151|0.31|0.05|0.01|149|327|
 |AD_CTR|AD_CTR_Astrocytes_up|1.1e-115|5.9e-115|0.25|0.08|0.04|320|327|
+
+
+## Running with a custom gene set 
+
+To run PxN with a user-supplied gene set you'll need to:
+
+1. Generate a standard table following the format explained in the Inputs section. Make sure to name your file as `\[GENESETNAME\]_pathway_table.csv`.
+2. Place your standard table in the `std_gene_tables` folder.
+3. Edit the config file to change the name of the geneset to the name of your geneset (the \[GENESETNAME\] part of the file name you created in step 1).
+
+```
+GSNAMEBASE='my-geneset' # Example of GENESETNAME gene set
+```
+
+4. Run the input-generation step from the `scripts` folder:
+
+```
+./00_prepset_wrapper.sh 
+```
+
+This wrapper parses the config file and executes the script `pxn_00_prepset.R` which will process the standard table to meet the pipeline requirements. This script will:
+
+1. Filter based pathways based on their size: Discards pathways that have more than `MAX_GENES` genes or less than `MIN_GENES` genes.
+2. Filters the gene set so that it only contains genes that are present in the gene universe of the corresponding backgorund dataset. 
+3. Generates the objects required by PDxN inside the `../input` folder:   
+    - `pathway_pairs_stats.csv`: a tablle with summary statistics of all pathway pairs passing the Jacquard index threshold (`MAX_JACQ/100`).
+    - `pathway_list.RDS`: R object with a list of lists containing the lists of genes in each pathway.
+    - `pathway_table.csv`: Human-readable table with the filtered set of gene sets contained in the R object.
+
+You can customize the filtering parameters in the config file. 
+  
+## Important notes
+
+If running on a server, use the script `job-scheduler.sh` to emulate a slurm jobarray to run the wrapper for step 1 that processess independently all the tissue groups in the background reference dataset. Simply modify the number of cores directly in the config file (follow its in-code documentation).    
+
+**Resource allocation**: 
+
+The job scheduler will block a given number of cores to launch jobs one after the other. Each of the sequential jobs utilizes multiple cores internally, this parameter is specified in the `config_pdxn.sh` file. You need to take into consideration both numbers when deciding the number of cores you will asign to the job scheduler. For example, if each sequencial job is set to use 8 cores and the scheduler to use 3, then your code will be using 24 cores at any given time. If you set the sequential jobs to use 25 cores each, and the job scheduler to use 4, you would be taking over 120 cores! Be careful and make sure you use only the resources that are needed. A configuration of 8 cores in the sequencial jobs and 3 on the job scheduler strikes a good balance between performance and time. 
+
+**Monitoring jobs**
+
+The job scheduler emulator will create a time-stamped folder inside `scripts/general_logs` that will contain one log file for every 'job', and a general log file. The individual log files show the messages/errors sent to STDOUT by the source script inside the wrapper. The general log file will show a new line every time a new job is launched. You can use this file to track the progress of the code. Once all the jobs have been launched this file sill print a message indicating that it has submitted all jobs. You should also find as many log files as tissues in the selected background dataset. Similarly, the second wrapper creates a log file with the standard output of the R script. 
+
+_Example of general log file_
+
+```
+Starting job scheduler...
+Max number of cores: 3
+Number of jobs to be submitted: 22
+[2025-02-16 16:49:34] Launching job 0 of 22 ...
+[2025-02-16 16:49:35] Launching job 1 of 22 ...
+[2025-02-16 16:49:37] Launching job 2 of 22 ...
+[2025-02-16 16:49:48] Launching job 3 of 22 ...
+[2025-02-16 16:49:59] Launching job 4 of 22 ...
+[2025-02-16 16:50:00] Launching job 5 of 22 ...
+[2025-02-16 16:50:11] Launching job 6 of 22 ...
+[2025-02-16 16:50:22] Launching job 7 of 22 ...
+[2025-02-16 16:50:23] Launching job 8 of 22 ...
+[2025-02-16 16:50:34] Launching job 9 of 22 ...
+[2025-02-16 16:50:45] Launching job 10 of 22 ...
+[2025-02-16 16:50:56] Launching job 11 of 22 ...
+[2025-02-16 16:50:57] Launching job 12 of 22 ...
+[2025-02-16 16:51:09] Launching job 13 of 22 ...
+[2025-02-16 16:51:20] Launching job 14 of 22 ...
+[2025-02-16 16:51:21] Launching job 15 of 22 ...
+[2025-02-16 16:51:32] Launching job 16 of 22 ...
+[2025-02-16 16:51:43] Launching job 17 of 22 ...
+[2025-02-16 16:51:44] Launching job 18 of 22 ...
+[2025-02-16 16:51:55] Launching job 19 of 22 ...
+[2025-02-16 16:52:06] Launching job 20 of 22 ...
+[2025-02-16 16:52:07] Launching job 21 of 22 ...
+Completed all jobs
+```
+
+_Example of step 2 wrapper log file_
+
+```
+GENE SET FILE =  ../input/gene_sets/genedex__gtextoil_iBrain/pathway_list.RDS
+METADATA FILE =  ../input/gene_expression/gtextoil_iBrain/metadata_gtextoil_iBrain.csv
+CORS DIRECTORY =  ../output/test_run/genedex__gtextoil_iBrain/mean_pcor2_barcode_tables
+OUTPUT DIRECTORY =  ../output/test_run/genedex__gtextoil_iBrain/combined_estimates
+NUMBER OF CORES =  25
+Loading experiment-level estimates...
+    Number of experiments:  22
+Extracting unique set of pathway statistics...
+    Number of pathways pairs:  16834
+Combining correlation estimates...
+Combining P values...
+Finished.
+Time difference of 3.921468 secs
+```

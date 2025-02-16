@@ -15,37 +15,60 @@ nav_order: 4
 
 ## Augment mode 
 
-This functionality enables the user to compute a network between with two types of nodes (or pathways): core nodes and augmented nodes. The pathways in the core set come from the user's geneset of interest, the one that was used in the previous sections. Augmented nodes are a series of built-in reference pathways that can be incorporated into the analysis of a custom gene set (i.e the core set) to put those pathways of interest in the context of other known sets of genes, such as canonical pathways from MSigDB or drug-response pathways from LINCS (2020 release). This approach can also be further customized with other commonly used gene sets that are not built-in, the process is described [here](https://github.com/hidelab/PDxN_2.0/tree/main/analysis/pipeline_pdxn_2.0/input/augment_sets/README.md). 
+This functionality enables the user to compute a network between with two types of nodes (i.e. gene sets or pathways): _core_ nodes and _augment_ nodes. The nodes in the _core_ set come from the input gene sets file, the one defined at the beginning of the pipeline. The nodes in the _augment_ group come from a built-in reference gene sets file (called _augment_ set)). Classifying the nodes into two categories allows us to derive different kinds of relationships between them. There are three potential networks that the system can generate between _core_ and _augment_ sets:
+    a. unipartite: this is a fully-connected network, meaning that all the potential relationships between all nodes are calculated.    
+    b. bipartite: this type of network only allows relationships between different types of nodes.
+    c. uni-bipartite (recommended): a bipartite network expanded with a unipartite network of core nodes only.
 
-To run the pipeline in augment using built-in sets mode follow these steps:
+IMPORTANT: The unipartite mode is the most computationally expensive of all three, since it calculates all pairwaise relationships between nodes. This mode is not recommended for very large gene sets (>15,000 pathways).
 
-1. Create a collection file (plain text file) inside `input/augment_sets/collections` named [Collection_Name].txt
+The pipeline incorporates single or multiple _augment_ set(s) into the standard analysis as a _collection_. Which is simply a text file containing in each line the name of the _augment_ set(s).  
 
-Browse the list of built-in gene sets inside `input/augment_sets/tables` and write the names of the desired gene sets in the collection file. Only write the portion of the name file preceding the `_pathway_table.csv` suffix. For example, if the gene set file is called `LINCS2020_central_nervous_system_down_pathway_table.csv`, you would write `LINCS2020_central_nervous_system_down` in your collection file. 
+### Inputs 
 
-2. Enter the name of your collection file without the extension into the config file:
+To showcase this functionality we will use the `test` collection. The `test` collection source file can be found inside the `input` folder at `augment_sets/collections/test.txt`. The file has only 4 lines and looks like this:
+
+```
+LINCS2020_autonomic-ganglia_down
+LINCS2020_autonomic-ganglia_up
+LINCS2020_placenta_down
+LINCS2020_placenta_up
+```
+
+Each line refers to a different _augment_ set. Their source files are inside `augment_sets/tables`, and each looks like a standard gene set table (described in the [Inputs](https://hidelab.github.io/pxn/docs/getting-started/inputs/#using-custom-gene-sets) section). You do not need to interact with any of these files, they are just shown for clarity. 
+
+### Quickstart
+
+1. Open the config file in a text editor. 
+
+2. Enter the name of your collection file without the extension into the variable `COLLECTION`:
 
 ```
 COLLECTION='test'
 ```
 
-3. Specify the type of network that you want to compute in the config file:
+3. Specify the type of network type that you want to compute in the variable `NWRK_TYPE`:
 
 ```
-export NWRK_TYPE='uni_bipartite'
+NWRK_TYPE='uni_bipartite'
 ```
 
-There are three potential networks that the system can generate between the core gene set and a collection of reference gene sets:
-    a. unipartite: this is a fully-connected network, meaning that all the potential relationships between all nodes are calculated.    
-    b. bipartite: this type of network only allows relationships between different types of nodes.
-    c. uni-bipartite (recommended): this mode is a custom network where the bipartite network get expanded with a unipartite network of core nodes only.
+4. Save your changes to the config file and follow the instructions to run the PxN pipeline with a custom gene set.
 
-IMPORTANT: The unipartite mode is the most computationally expensive of all three, since it calculates all pairwaise relationships between nodes. This mode is not recommended for very large gene sets (>15,000 pathways).
+### Modifications 
 
-4. Run the pipeline as described in the `Getting Started` section, starting from Step 1 - running ./00_prepset-wrapper.sh
+#### Creating a new collection 
+
+Create a collection file (plain text file) inside `pipeline/input/augment_sets/collections` named [CollectionName].txt
+
+Browse the list of built-in gene sets inside `pipeline/input/augment_sets/tables` and write the names of the desired `augment` sets in the collection file (one _augment_ set per line). Only write the portion of the name file preceding the `_pathway_table.csv` suffix. For example, if the gene set file is called `LINCS2020_central_nervous_system_down_pathway_table.csv`, you would write `LINCS2020_central_nervous_system_down` in your collection file. 
+
+#### Adding a new _augment_ set
+
+To add a new _augment_ set to a collection, simply generate a standard table following the same instructions as [using custom gene sets](https://hidelab.github.io/pxn/docs/getting-started/inputs/#using-custom-gene-sets) and place it inside the `tables` folder. Then follow the same procedure described above to add the new _augment_ set to your colection. Make sure to name the file as \[GENESETNAME\]\_pathway\_table.csv, otherwise the pipeline won't recognize it.
 
 
-## Adding a new background
+## Using a custom background
 
 Integrating a new background gene expression into the pipeline is as simple as matching the file structure (described below). [This](https://github.com/hidelab/PDxN_2.0/blob/main/analysis/pipeline_pdxn_2.0/scripts/example_prep_notebooks/prep_background-gtex-subset.ipynb) is an example of how to build a custom background dataset by subsetting tissues from the GTex toil dataset. If using a completely different dataset as input, you can use the example to guide your preprocessing choices. 
 

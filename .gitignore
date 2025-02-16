@@ -34,6 +34,7 @@ vendor/
 .png
 .DS_store
 .gmt
+.log
 
 # History files 
 
