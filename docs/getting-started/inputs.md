@@ -64,7 +64,7 @@ Each subfolder comes with a `README.md` file providing extensive documentation a
 | gene_sets | Processed gene set objects |
 | std_gene_tables | Reference gene set tables |
     
-### `gene_expression` folder
+### The `gene_expression` folder
 
 This folder includes post-processed gene expression datasets structured in the format required for PxN. The processing steps undertaken to generate these datasets are:
 - Keeping only genes expressed with at least 3 counts in at least 1 sample (they constitute the _gene universe_)
@@ -72,73 +72,56 @@ This folder includes post-processed gene expression datasets structured in the f
 
 List of datasets:
 
-1. `gtextoil`
+- `gtextoil`- This dataset uses as base the GTex toil dataset.
+    - Gene universe size: 19561
+    - Number of samples: 7847
+    - Number of tissues: 54
 
-This dataset uses as base the GTex toil dataset.
+- `gtextoil_iBrain` - This is a subset of the `gtextoil` dataset that includes only brain and immune tissues. 
+    - Gene universe size: 18994
+    - Number of samples: 2746
+    - Number of tissues: 22
 
-- Gene universe size: 19561
-- Number of samples: 7847
-- Number of tissues: 54
-
-2. `gtextoil_iBrain`
-
-This is a subset of the `gtextoil` dataset that includes only brain and immune tissues. 
-
-- Gene universe size: 18994
-- Number of samples: 2746
-- Number of tissues: 22
-
-3. `HGU133plus`
+- `HGU133plus`
 
 This dataset uses as base the HGU133plus microarray barcode dataset.
+    - Gene universe size: 20590
+    - Number of samples: 3207
+    - Number of tissues: 72
 
-- Gene universe size: 20590
-- Number of samples: 3207
-- Number of tissues: 72
-
-### `gene_sets` folder
+### The `gene_sets` folder
 
 Each reference gene set gets processed for a particular gene expression background to ensure that only genes expressed in the background dataset are included in the gene set used for analysis. This results in unique background-gene set combinations that are labelled using the gene set and background dataset internal tags. 
 
 List of gene sets:
 
-1. `MSigDBv7\__gtextoil`
-
-This geneset contains the pathways from MSigDB version 7 filtered for the gene universe of the GTex toil (gfilter) dataset.
+- `MSigDBv7\__gtextoil`- This geneset contains the pathways from MSigDB version 7 filtered for the gene universe of the GTex toil (gfilter) dataset.
   - Pathways: 1186
   - Pathway pairs: 702689
 
-`MSigDBv6\__gtextoil`
-
-This geneset contains the pathways from MSigDB version 6 filtered for the gene universe of the GTex toil (gfilter) dataset.
+- `MSigDBv6\__gtextoil`- This geneset contains the pathways from MSigDB version 6 filtered for the gene universe of the GTex toil (gfilter) dataset.
   - Pathways: 851
   - Pathway pairs: 361628
 
-2. `genedex\__gtextoil`
-
-This gene set contains the gene lists of AD facets available in Genedex (accessed Nov 2024), processed for the GTex toil (gfilter) dataset.
+- `genedex\__gtextoil` - This gene set contains the gene lists of AD facets available in Genedex (accessed Nov 2024), processed for the GTex toil (gfilter) dataset.
   - Pathways: 242
   - Pathway pairs: 16834
 
-3. `MSigDBv7\__HGU133plus2`
-
-This geneset contains the pathways from MSigDB version 7 filtered for the gene universe of the HGU133plus2 barcode (gfilter) dataset.
+- `MSigDBv7\__HGU133plus2` - This geneset contains the pathways from MSigDB version 7 filtered for the gene universe of the HGU133plus2 barcode (gfilter) dataset.
   - Pathways: 1199
   - Pathway pairs: 718189
 
-4. `MSigDBv6\__gtextoil`
-
-This geneset contains the pathways from MSigDB version 6 filtered for the gene universe of the GTex toil (gfilter) dataset.
+- `MSigDBv6\__gtextoil` - This geneset contains the pathways from MSigDB version 6 filtered for the gene universe of the GTex toil (gfilter) dataset.
   - Pathways: 851
   - Pathway pairs: 361628
 
-### `std_gene_tables` folder
+### The `std_gene_tables` folder
 
-This directory contains a series of standard tables prepared for different reference gene sets. These files are used as the source to prepare the gene set files in the `gene_sets` folder. There are three tables included by default in the pipeline, one for each source database. The naming convention is \`[GENESETNAME\]\_pathway\_table.csv` This is where custom user-specific standard tables (see below) should be place to ensure consistency.
+This directory contains a series of standard tables prepared for different reference gene sets. These files are used as the source to prepare the gene set files in the `gene_sets` folder. There are three tables included by default in the pipeline, one for each source database. The naming convention is `\[GENESETNAME\]\_pathway\_table.csv` This is where custom user-specific standard tables (see below) should be place to ensure consistency.
 
 ## Creating custom gene sets
 
-To run the pipeline with your own gene set you will need to generate a standard table, which is basically a tab-separated file with two columns: `set_name` and `genes`. This file should be place inside the `std_gene_tables` folder following the file naming convention of standard tables (described above). The `set_name` column indicates the name of the pathway or gene list, and the `genes` column lists the Entrez IDs of the genes in that pathway. If a pathway has 10 genes, this table would have 10 rows for that pathway, one for every gene, where the pathway name is repeated. You can find several examples inside the folder `scripts/example_notebooks` on how to generate this table from unprocessed inputs from public databases such as [MSigSB](https://github.com/hidelab/PDxN_2.0/blob/main/analysis/pipeline_pdxn_2.0/scripts/example_prep_notebooks/prep_geneset-MSigDB_v7.ipynb) or custom gene sets like [Genedex](https://github.com/hidelab/PDxN_2.0/blob/main/analysis/pipeline_pdxn_2.0/scripts/example_prep_notebooks/prep_geneset-Genedex_2024.ipynb). 
+To run the pipeline with your own gene set you will need to generate a standard table, which is basically a tab-separated file with two columns: `set_name` and `genes`. This file should be place inside the `std_gene_tables` folder following the file naming convention of standard tables (described above). The `set_name` column indicates the name of the pathway or gene list, and the `genes` column lists the Entrez IDs of the genes in that pathway. If a pathway has 10 genes, this table would have 10 rows for that pathway, one for every gene, where the pathway name is repeated. You can find several examples inside the folder `scripts/example_notebooks` on how to generate this table from unprocessed inputs from public databases such as [MSigSB](https://github.com/hidelab/pxn/pipeline/scripts/example_prep_notebooks/prep_geneset-MSigDB_v7.ipynb) or custom gene sets like [Genedex](https://github.com/hidelab/pxn/pipeline/scripts/example_prep_notebooks/prep_geneset-Genedex_2024.ipynb). 
 
 Regardless of the starting point, the standard table should look like this:
 

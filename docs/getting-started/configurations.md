@@ -6,30 +6,25 @@ nav_order: 2
 
 # Pipeline configuration
 
-The pipeline is controlled by the central configuration file `config_pxn.sh`. This config file contains all the information about where the pipeline inputs are, the resources that will be allocated and other PDxN specific parameters. Every individual script in the pipeline depends on the contents of this config file to run proerly. The first thing you need to do is modify the variables in the config file. DO NOT CHANGE THE VARIABLE NAMES, just modify the file paths or other values (right hand side of the `=` sign). The in-line documentation specifies what to put in each variable. 
+The pipeline is controlled by the central configuration file `config_pxn.sh`. This config file contains all the information about where the pipeline inputs are, the resources that will be allocated and other PDxN specific parameters. Every individual script in the pipeline depends on the contents of this config file to run proerly. The first thing you need to do is modify the variables in the config file. 
 
-Necessary changes:
+**DO NOT CHANGE THE VARIABLE NAMES**, just modify the file paths or other values (right hand side of the `=` sign).
 
-1. Indicate the path to the input standard gene set table (described above) in the variable `RAW_GSET`.
+## Modifications 
 
-```{bash}
-RAW_GSET='path/to/your/preprocessed/geneset/table/file'
-```
+The following table outlines the customizable parameters of the config file:
 
-2. Give your gene set a short name using `GSNAMEBASE`. If you simply want to use one of our existing gene sets, see the list of opptions available in the [gene set documentation](https://github.com/hidelab/PDxN_2.0/tree/main/analysis/pipeline_pdxn_2.0/input/gene_sets#gene-sets-description).
-
-```{bash}
-GSNAMEBASE='MSigDB_v7'
-```
-
-3. Define the output folder for your results using `OUTDIR`. We recommend keeping the `output` folder one level up from this `scripts` folder and creating a sub-directory.
-```{bash}
-OUTDIR='../output/my_run'
-```
-
-4. Select the background data set that you want to use with `DSNAME`. To see the list of available data sets refer to the [background data set documentation](https://github.com/hidelab/PDxN_2.0/tree/main/analysis/pipeline_pdxn_2.0/input/gene_expression#background-gene-expression-datasets-description).
-```{bash}
-DSNAME='gtextoil_gfilter'
-```
-
-6. Configure further parameters according to your specific needs. Use the in-line documentation of the config file to learn more about additional settings. 
+| Variable      | Description | Example | Available Options |
+|--------------|------------|---------|-------------------|
+| `GSNAMEBASE` | Base name of the gene set | `genedex` | `genedex`, `MSigDBv7`, `MSigDBv6` |
+| `DSNAME` | Name of the background reference dataset | `gtextoil_iBrain` | `gtextoil`, `gtextoil_iBrain`, `HGU133plus2` |
+| `OUTDIR_NAME` | Name of directory to store outputs | `test_run` | Custom string |
+| `COLLECTION` | Optional, name of collection used to augment the custom gene set (augment mode) | `"test"` | Custom string |
+| `NWRK_TYPE` | Optional, type of network to calculate (augment) | `"unipartite"` | `unipartite`, `bipartite`, `uni_bipartite` |
+| `CORES` | Number of cores (for part 1) | `10` | Integer |
+| `CORES_P2` | Number of cores (for part 2) | `25` | Integer |
+| `MAX_GENES` | Largest pathway size allowed | `500` | Integer |
+| `MIN_GENES` | Smallest pathway size allowed | `20` | Integer |
+| `MAX_JACQ` | Max Jacquard index between two pathways | `85` | Integer |
+| `PCOR_OPTION` | Choice of partial correlation | `0` | 0 (yes) or 1 (no) |
+| `MIN_SAMPLES` | Minimum number of samples per tissue | `10` | Integer |
