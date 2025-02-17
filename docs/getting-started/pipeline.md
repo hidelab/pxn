@@ -26,7 +26,7 @@ The pipeline consists of three major stages:
 
 To demonstrate the use of PxN we will simply run the pipeline using the `gtextoil` background with the pre-computed `genedex\_gtextoil` gene set (both described in the [Inputs](https://hidelab.github.io/pxn/docs/getting-started/inputs/) section). This demonstration skips the pre-processing stage, since the gene set is already pre-computed. The first thing you need to do is modify the variables in the config file. Do not change the variable names, just modify the file paths or other values (right hand side of the `=` sign). 
 
-1. Configure the input and output paramenters in the config file:
+\1. Configure the input and output paramenters in the config file:
    
 ```
 GSNAMEBASE='genedex' # Gene set
@@ -34,7 +34,7 @@ DSNAME='gtextoil_gfilter' # Background dataset
 OUTDIR='../output/test_run' # Output folder
 ```
 
-2. Customize other PxN run parameters according to your system:
+\2. Customize other PxN run parameters according to your system:
 
 ```
 # Resources
@@ -42,7 +42,7 @@ export CORES=10 # number of cores (for part 1)
 export CORES_P2=25 # number of cores (for part 2)
 ```
 
-3. From the scripts folder, test your configuration by running the first step of the pipeline for one tissue:
+\3. From the scripts folder, test your configuration by running the first step of the pipeline for one tissue:
 
 ```
  ./01_explevel_wrapper.sh 1
@@ -56,13 +56,13 @@ Finished.
 Time difference of 18.45294 secs
 ```
 
-4. Launch the job scheduler emulator to run the first step for all tissues. Monitor the jobs by looking at the log file inside `general_logs/01_explevel_wrapper_TIMESTAMP/scheduler.log` to see when all jobs are finished (see example below):
+\4. Launch the job scheduler emulator to run the first step for all tissues. Monitor the jobs by looking at the log file inside `general_logs/01_explevel_wrapper_TIMESTAMP/scheduler.log` to see when all jobs are finished (see example below):
 
 ```
 nohup ./job-sheduler.sh &
 ```
 
-5. Once all the jobs are done, run the step 2 of the pipeline. Verify that the code finished successfully by looking at the log file `general_logs/02_combine_wrapper_TIMESTAMP/run.log` (see example below):
+\5. Once all the jobs are done, run the step 2 of the pipeline. Verify that the code finished successfully by looking at the log file `general_logs/02_combine_wrapper_TIMESTAMP/run.log` (see example below):
 
 ```
 ./02_combine_wrapper.sh
