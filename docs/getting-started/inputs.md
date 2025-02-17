@@ -40,14 +40,16 @@ This dataset was obtained from the set of legacy files of the orginal PCxN versi
 PxN built-in data folder be downloaded from Zenodo. To make sure that it integrates into the pipeline ecosystem, the file needs to be expanded inside the `input` folder under `pipeline`.   
 
 For example, if you cloned the repo into `~/pxn` your directory strcucture should look like this:
+
     - `~/pxn/pipeline`
     	- `~/pxn/pipeline/input`
     	- `~/pxn/pipeline/scripts`   
     	- `~/pxn/pipeline/output`   
 
-To expand the file after downloading it, simply do:
+To expand the file after downloading, simply do:
 
 ```
+cp /path/to/file/pxn_inputs.tgz ~/pxn/pipeline/input # Copy the tar file into the input folder
 cd ~/pxn/pipeline/input # Enter the input directory
 tar -xvzf input.tgz # Expand the tar file
 rm input.tgz # Delete the tar file after expanding
