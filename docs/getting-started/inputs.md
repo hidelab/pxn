@@ -45,6 +45,7 @@ For example, if you cloned the repo into `~/pxn` your directory strcucture shoul
     	- input/
     	- scripts/  
     	- output/
+### Steps
 
 1. Download the data from Zenodo [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14879142.svg)](https://doi.org/10.5281/zenodo.14879142)
 2. Move the dowloaded file into the `-/pxn/pipeline/input` folder
