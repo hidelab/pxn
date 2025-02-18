@@ -2,6 +2,10 @@
 title: Pipeline
 parent: Getting Started
 nav_order: 3
+callouts:
+  warning:
+    title: Warning
+    color: red
 ---
 
 # Running the Pipeline
@@ -110,6 +114,8 @@ GSNAMEBASE='my-geneset' # Example of GENESETNAME gene set
 ./00_prepset_wrapper.sh 
 ```
 
+
+
 This wrapper parses the config file and executes the script `pxn_00_prepset.R` which will process the standard table to meet the pipeline requirements. This script will:
 
 1. Filter based pathways based on their size: Discards pathways that have more than `MAX_GENES` genes or less than `MIN_GENES` genes.
@@ -125,9 +131,10 @@ You can customize the filtering parameters in the config file.
 
 If running on a server, use the script `job-scheduler.sh` to emulate a slurm jobarray to run the wrapper for step 1 that processess independently all the tissue groups in the background reference dataset. Simply modify the number of cores directly in the config file (follow its in-code documentation).    
 
-**Resource allocation**: 
+**Resource allocation**:
 
-The job scheduler will block a given number of cores to launch jobs one after the other. Each of the sequential jobs utilizes multiple cores internally, this parameter is specified in the `config_pdxn.sh` file. You need to take into consideration both numbers when deciding the number of cores you will asign to the job scheduler. For example, if each sequencial job is set to use 8 cores and the scheduler to use 3, then your code will be using 24 cores at any given time. If you set the sequential jobs to use 25 cores each, and the job scheduler to use 4, you would be taking over 120 cores! Be careful and make sure you use only the resources that are needed. A configuration of 8 cores in the sequencial jobs and 3 on the job scheduler strikes a good balance between performance and time. 
+{: .warning }
+> The job scheduler will block a given number of cores to launch jobs one after the other. Each of the jobs uses multiple cores internally. You need to take into consideration both numbers when deciding the number of cores you will asign to the job scheduler. For example, if each sequencial job is set to use 8 cores and the scheduler to use 3, then your code will be using 24 cores at any given time. If you set the sequential jobs to use 25 cores each, and the job scheduler to use 4, you would be taking over 120 cores! Be careful and make sure you use only the resources that are needed. A configuration of 8 cores in the sequencial jobs and 3 on the job scheduler strikes a good balance between performance and time. 
 
 **Monitoring jobs**
 
