@@ -87,9 +87,7 @@ List of datasets:
     - Number of samples: 2746
     - Number of tissues: 22
 
-- `HGU133plus`
-
-This dataset uses as base the HGU133plus microarray barcode dataset.
+- `HGU133plus`- This dataset uses as base the HGU133plus microarray barcode dataset.
     - Gene universe size: 20590
     - Number of samples: 3207
     - Number of tissues: 72
