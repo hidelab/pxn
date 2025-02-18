@@ -6,6 +6,13 @@ callouts:
   warning:
     title: Warning
     color: red
+  note-title:
+    color: purple
+  important:
+    title: Important
+    color: blue
+  highlight:
+    color: yellow
 ---
 
 # Running the Pipeline
@@ -66,6 +73,15 @@ Time difference of 18.45294 secs
 nohup ./job-sheduler.sh &
 ```
 
+{: .note-title }
+> Note
+>
+> The script `job-scheduler.sh` emulates a slurm jobarray to run the wrapper script for step 1 s independent 'jobs'. The wrapper will process one reference tissue at a time based on the job ID passed by the job scheduler.
+
+{: .warning }
+The job scheduler will block a given number of cores to launch jobs one after the other. Each of the jobs uses multiple cores internally. You need to take into consideration both numbers when deciding the number of cores you will asign to the job scheduler. For example, if each sequencial job is set to use 8 cores and the scheduler to use 3, then your code will be using 24 cores at any given time. If you set the sequential jobs to use 25 cores each, and the job scheduler to use 4, you would be taking over 120 cores! Be careful and make sure you use only the resources that are needed. A configuration of 8 cores in the sequencial jobs and 3 on the job scheduler strikes a good balance between performance and time. 
+
+
 \5. Once all the jobs are done, run the step 2 of the pipeline. Verify that the code finished successfully by looking at the log file `general_logs/02_combine_wrapper_TIMESTAMP/run.log` (see example below):
 
 ```
@@ -114,8 +130,6 @@ GSNAMEBASE='my-geneset' # Example of GENESETNAME gene set
 ./00_prepset_wrapper.sh 
 ```
 
-
-
 This wrapper parses the config file and executes the script `pxn_00_prepset.R` which will process the standard table to meet the pipeline requirements. This script will:
 
 1. Filter based pathways based on their size: Discards pathways that have more than `MAX_GENES` genes or less than `MIN_GENES` genes.
@@ -129,19 +143,13 @@ You can customize the filtering parameters in the config file.
   
 ## Important notes
 
-If running on a server, use the script `job-scheduler.sh` to emulate a slurm jobarray to run the wrapper for step 1 that processess independently all the tissue groups in the background reference dataset. Simply modify the number of cores directly in the config file (follow its in-code documentation).    
-
-**Resource allocation**:
-
-{: .warning }
-> The job scheduler will block a given number of cores to launch jobs one after the other. Each of the jobs uses multiple cores internally. You need to take into consideration both numbers when deciding the number of cores you will asign to the job scheduler. For example, if each sequencial job is set to use 8 cores and the scheduler to use 3, then your code will be using 24 cores at any given time. If you set the sequential jobs to use 25 cores each, and the job scheduler to use 4, you would be taking over 120 cores! Be careful and make sure you use only the resources that are needed. A configuration of 8 cores in the sequencial jobs and 3 on the job scheduler strikes a good balance between performance and time. 
-
 **Monitoring jobs**
 
 The job scheduler emulator will create a time-stamped folder inside `scripts/general_logs` that will contain one log file for every 'job', and a general log file. The individual log files show the messages/errors sent to STDOUT by the source script inside the wrapper. The general log file will show a new line every time a new job is launched. You can use this file to track the progress of the code. Once all the jobs have been launched this file sill print a message indicating that it has submitted all jobs. You should also find as many log files as tissues in the selected background dataset. Similarly, the second wrapper creates a log file with the standard output of the R script. 
 
 _Example of general log file_
 
+>{: .highlight }
 ```
 Starting job scheduler...
 Max number of cores: 3
@@ -173,6 +181,7 @@ Completed all jobs
 
 _Example of step 2 wrapper log file_
 
+>{: .highlight }
 ```
 GENE SET FILE =  ../input/gene_sets/genedex__gtextoil_iBrain/pathway_list.RDS
 METADATA FILE =  ../input/gene_expression/gtextoil_iBrain/metadata_gtextoil_iBrain.csv
